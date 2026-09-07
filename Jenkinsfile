@@ -13,5 +13,15 @@ pipeline {
                 bat 'npx playwright install'
             }
         }
+
+        stage('Create Environment File') {
+            steps {
+                withCredentials([string(credentialsId: 'refernest-env', variable: 'ENV_FILE')]) {
+                    powershell '''
+                        [System.IO.File]::WriteAllText('.env', $env:ENV_FILE)
+                    '''
+                }
+            }
+        }
     }
 }
