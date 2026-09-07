@@ -21,6 +21,8 @@ pipeline {
                         [System.IO.File]::WriteAllText('.env', $env:ENV_FILE)
                     '''
                 }
+
+                bat 'powershell -Command "Get-Content .env | ForEach-Object { if ($_ -match \\"^([^#=]+)=\\") { Write-Host $matches[1] } }"'
             }
         }
 
