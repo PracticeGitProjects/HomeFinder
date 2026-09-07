@@ -22,7 +22,7 @@ pipeline {
                     '''
                 }
 
-                bat 'powershell -Command "Get-Content .env | ForEach-Object { if ($_ -match \\"^([^#=]+)=\\") { Write-Host $matches[1] } }"'
+                bat 'powershell -Command "Get-Content .env | ForEach-Object { ($_ -split ''='',2)[0] }"'
             }
         }
 
