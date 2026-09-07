@@ -16,20 +16,11 @@ pipeline {
 
         stage('Create Environment File') {
             steps {
-                withCredentials([string(credentialsId: 'refernest-env', variable: 'ENV_FILE')]) {
+                withCredentials([file(credentialsId: 'refernest-env-file', variable: 'ENV_FILE')]) {
                     powershell '''
-                        [System.IO.File]::WriteAllText('.env', $env:ENV_FILE)
+                        Copy-Item $env:ENV_FILE '.env' -Force
                     '''
                 }
-
-                powershell '''
-                    $content = Get-Content ".env" -Raw
-                    $emailExists = $content -match "(?m)^TEST_USER_EMAIL="
-                    $passwordExists = $content -match "(?m)^TEST_USER_PASSWORD="
-
-                    Write-Host "TEST_USER_EMAIL variable exists in .env: $emailExists"
-                    Write-Host "TEST_USER_PASSWORD variable exists in .env: $passwordExists"
-                '''
             }
         }
 
