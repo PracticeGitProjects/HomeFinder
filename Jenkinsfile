@@ -21,6 +21,15 @@ pipeline {
                         [System.IO.File]::WriteAllText('.env', $env:ENV_FILE)
                     '''
                 }
+
+                powershell '''
+                    $content = Get-Content ".env" -Raw
+                    $emailExists = $content -match "(?m)^TEST_USER_EMAIL="
+                    $passwordExists = $content -match "(?m)^TEST_USER_PASSWORD="
+
+                    Write-Host "TEST_USER_EMAIL variable exists in .env: $emailExists"
+                    Write-Host "TEST_USER_PASSWORD variable exists in .env: $passwordExists"
+                '''
             }
         }
 
