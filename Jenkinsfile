@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
+        stage('Install Dependencies') {
             steps {
-                echo 'Jenkins has checked out the source code.'
+                bat 'npm ci'
             }
         }
     }
