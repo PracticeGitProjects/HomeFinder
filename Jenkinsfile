@@ -21,8 +21,6 @@ pipeline {
                         [System.IO.File]::WriteAllText('.env', $env:ENV_FILE)
                     '''
                 }
-
-                bat 'powershell -Command "Get-Content .env | ForEach-Object { ($_ -split ''='',2)[0] }"'
             }
         }
 
