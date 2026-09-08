@@ -48,7 +48,6 @@ export default defineConfig({
         // =====================================================
         // AUTHENTICATION SETUP
         // =====================================================
-
         {
             name: 'setup',
 
@@ -58,9 +57,11 @@ export default defineConfig({
         // =====================================================
         // CHROMIUM
         // =====================================================
-
         {
             name: 'chromium',
+
+            // Do not run authentication setup again
+            testIgnore: /auth\.setup\.spec\.ts/,
 
             use: {
                 storageState:
@@ -73,9 +74,11 @@ export default defineConfig({
         // =====================================================
         // FIREFOX
         // =====================================================
-
         {
             name: 'firefox',
+
+            // Do not run authentication setup again
+            testIgnore: /auth\.setup\.spec\.ts/,
 
             use: {
                 storageState:
