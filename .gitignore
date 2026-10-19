@@ -1,10 +1,15 @@
 
-# Playwright
+# Dependencies
 node_modules/
+
+# Playwright test results and reports
 /test-results/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
-/playwright/.auth/
+
+# Environment variables and secrets
 .env
+
+# Authentication state
 src/resources/auth/auth.json
