@@ -26,7 +26,7 @@ pipeline {
 
         stage('Run Playwright Tests') {
             steps {
-                bat 'npx playwright test src/tests/TC_000_HomeFinder_Homepage.spec.ts --project=chromium --no-deps'
+                bat 'npx playwright test src/tests/TC_000_HomeFinder_Homepage.spec.ts --project=homefinder --no-deps'
             }
         }
     }
