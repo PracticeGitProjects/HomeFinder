@@ -1,4 +1,5 @@
-import { defineConfig } from '@playwright/test';
+
+import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -28,63 +29,90 @@ export default defineConfig({
 
     // Shared settings
     use: {
-
         // Application URL
         baseURL: process.env.BASE_URL,
 
         // Use actual browser window size
         viewport: null,
 
+        // Capture debugging evidence
         screenshot: 'only-on-failure',
-
         video: 'retain-on-failure',
-
         trace: 'retain-on-failure',
     },
 
     // Projects
     projects: [
 
-        // =====================================================
-        // AUTHENTICATION SETUP
-        // =====================================================
+        // ================================================
+        // AUTHENTICATION SETUP FOR REFERNEST
+        // ================================================
         {
             name: 'setup',
-
             testMatch: /auth\.setup\.spec\.ts/,
         },
 
-        // =====================================================
-        // CHROMIUM
-        // =====================================================
+        // ================================================
+        // HOMEFINDER - PUBLIC TESTS WITHOUT AUTHENTICATION
+        // ================================================
+        {
+            name: 'homefinder',
+
+            // Run only the HomeFinder homepage smoke test
+            testMatch: /TC_000_HomeFinder_Homepage\.spec\.ts/,
+
+            // Clean browser context without authentication
+            use: {
+                browserName: 'chromium',
+                viewport: null,
+                storageState: {
+                    cookies: [],
+                    origins: [],
+                },
+            },
+        },
+
+        // ================================================
+        // REFERNEST - CHROMIUM
+        // ================================================
         {
             name: 'chromium',
 
-            // Do not run authentication setup again
-            testIgnore: /auth\.setup\.spec\.ts/,
+            // Exclude setup and HomeFinder tests
+            testIgnore: [
+                /auth\.setup\.spec\.ts/,
+                /TC_000_HomeFinder_Homepage\.spec\.ts/,
+            ],
 
             use: {
-                storageState:
-                    'src/resources/auth/auth.json',
+                ...devices['Desktop Chrome'],
+                viewport: null,
+                storageState: 'src/resources/auth/auth.json',
             },
 
+            // Run authentication setup first
             dependencies: ['setup'],
         },
 
-        // =====================================================
-        // FIREFOX
-        // =====================================================
+        // ================================================
+        // REFERNEST - FIREFOX
+        // ================================================
         {
             name: 'firefox',
 
-            // Do not run authentication setup again
-            testIgnore: /auth\.setup\.spec\.ts/,
+            // Exclude setup and HomeFinder tests
+            testIgnore: [
+                /auth\.setup\.spec\.ts/,
+                /TC_000_HomeFinder_Homepage\.spec\.ts/,
+            ],
 
             use: {
-                storageState:
-                    'src/resources/auth/auth.json',
+                ...devices['Desktop Firefox'],
+                viewport: null,
+                storageState: 'src/resources/auth/auth.json',
             },
 
+            // Run authentication setup first
             dependencies: ['setup'],
         },
     ],
