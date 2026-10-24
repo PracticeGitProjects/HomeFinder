@@ -1,5 +1,5 @@
-import { test, expect } from '../resources/fixtures/test.fixture';
-import { ReferEarnActions } from '../resources/actions/referEarn.actions';
+import { test, expect } from '../../resources/fixtures/test.fixture';
+import { ReferEarnActions } from '../../resources/actions/referEarn.actions';
 
 test('User can access refer and earn dashboard page', async ({ page }) => {
     test.slow();

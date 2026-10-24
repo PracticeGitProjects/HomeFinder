@@ -54,7 +54,7 @@ export class ReferEarnLocatorsEndToEnd {
     constructor(private page: Page) {
 
         //Hero section refer page
-        this.homepageReferEarnTab = page.locator("span:has-text('Refer & Earn')");
+        this.homepageReferEarnTab = page.locator("span:has-text('Refer a Home')");
 
         this.referEarnCityInput = page.locator("(//span[text()='Refer']/ancestor::div)[6]//input");
 

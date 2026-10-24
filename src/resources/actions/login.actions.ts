@@ -10,9 +10,9 @@ export class LoginActions {
     }
 
     //Entering login details using email address and password
-    async clickEmailButton() {
-        await this.locators.emailButton.click();
-    }
+    // async clickEmailButton() {
+    //     await this.locators.emailButton.click();
+    // }
 
     async enterEmail(email: string) {
         await this.locators.emailInput.fill(email);
@@ -26,17 +26,17 @@ export class LoginActions {
         await this.locators.signInButton.click();
     }
 
-    //Entering login details using phone number and password
-    async clickPhoneButton() {
-        await this.locators.phoneButton.click();
-    }
+    // //Entering login details using phone number and password
+    // async clickPhoneButton() {
+    //     await this.locators.phoneButton.click();
+    // }
 
-    async enterPhoneNumber(phoneNumber: string) {   
-        await this.locators.phoneInput.fill(phoneNumber);
-    }
+    // async enterPhoneNumber(phoneNumber: string) {   
+    //     await this.locators.phoneInput.fill(phoneNumber);
+    // }
 
-    async enterPhonePassword (password: string) {
-        await this.locators.passwordInput.fill(password);
-    }
+    // async enterPhonePassword (password: string) {
+    //     await this.locators.passwordInput.fill(password);
+    // }
 
 }

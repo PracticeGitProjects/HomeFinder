@@ -14,9 +14,7 @@ export const test = base.extend<TestFixtures>({
         // Open login page
         await page.goto('/login');
 
-        // Login
-        await loginActions.clickEmailButton();
-
+        // Enter login credentials
         await loginActions.enterEmail(
             process.env.TEST_USER_EMAIL!
         );
