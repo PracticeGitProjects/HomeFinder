@@ -1,0 +1,409 @@
+How to install playwright?
+pre-requisites : install node.js, setup environmental variables, install VS Code (node 22.15)
+
+Steps:
+1. Create a folder under VS code editor
+2. Open terminal and use the code "npm init playwright@latest"
+-> Select language
+-> Select "tests" folder as end to end testing folder
+-> Github actions -> Yes or node
+-> Install browsers now (select true) or can be installed later using "npx playwright install" 
+3. Playwright version
+-> npx playwright --version () ---------> 10.9.2 (npm - node package manager for package installation and npx - node package executor for execution)
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Commands:
+//Run all the tests in the background
+npx playwright test
+
+//Show the report
+npx playwright show-report
+
+//Run all tests in headed mode - visible
+npx playwright test --headed
+
+//Run a specific test
+npx playwright test TC_000_HomeFinder_Homepage.spec.test
+
+//Specific test and specific browser
+npx playwright test TC_000_HomeFinder_Homepage.spec.test  --project=chromium
+
+//Specific tests 
+npx playwright test TC_000_HomeFinder_Homepage.spec.test TC_001_Refer_And_Earn_Homepage_Verification.spec.ts
+
+//Execute oly based on page title contains "Verify" under all the tests folder [-g means global]
+npx playwright test -g "Verify" 
+
+//Execute the test under "ui" mode where we can execute particular test and perform time travelling
+npx playwright test --ui
+
+//Execute the test under debug
+npx playwright test --debug
+
+//Execute only last failed tests
+npx playwright test --last-failed
+
+//Codegen
+npx playwright codegen
+
+//trace viewer
+npx playwright test --headed --trace on
+
+//Running the tests with retries
+npx playwright test --retries=3;
+
+//Grouping of tests
+npx playwright test --grep=Group1
+
+//Execution based on tags
+npx playwright test --grep "@sanity"
+
+//Executing testcases having two tags as sanity and regression
+npx playwright test --grep  "(?=.*@sanity)(?=.*@regression)"
+
+//Executing testcases having either as sanity or regression
+npx playwright test --grep  "@sanity|@regression"
+
+//Executing testcases other than @sanity
+npx playwright test --grep-invert  "@sanity"
+
+//Setting number of workers
+npx playwright test --workers 4
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+//Playwright actions
+
+=====Input box====
+const textBox=page.locator("#name");
+await expect(textBox).toBeVisible();
+await expect(textBox).toBeEnabled();
+const length:string|null=textBox.getAttribute("maxLength");
+expect(length).toBe('15');
+await textBox.fill("Kartik");
+await textBox.textContent(); -->returns empty string
+await textBox.inputValue(); -->returns input value of text
+expect(enteredValue).toBe("Kartik");
+
+======Radio button===
+await page.locator(".radio").check();
+await expect(radioButton).toBeChecked();  //One way
+await page.getByLabel("XL").unCheck();
+await expect(radioButton).isChecked().toBe(false); //Second way
+
+=======Checkboxes=========
+const days:String[]=['Sunday', 'Monday','Tuesday', 'Wednesday', 'Thursday','Friday','Saturday'];
+
+const checkBoxes:Locator[]=days.map(index=>page.getByLabel(index));
+
+for(const checkbox of checkBoxes){
+    checkbox.check();
+    await expect(checkbox).toBeChecked();
+}
+
+=======Autowaiting in Actions and Assertion=======
+
+-----------------------Autowait---------------------
+-> each element undergoes visible, enable, event action, stable and editable checkBoxes
+-> page.locator("#small").click({force:true})-------- which disables the actionability checkBoxes
+-> Which reduces flakiness
+
+-----------------------Timeouts---------------------
+-> Timeouts : How long a single test allowed to run
+-> We can set timeout for assertions specifically
+
+A) Test Timeout
+1) In config file 
+        export default defineConfig{
+                 timeout: 60000
+        }
+
+2) In testcase =>overrides global
+        test()=>{
+                test.setTimeout(60000); 
+        }
+
+3)Triple the timeouts : In testcase =>overrides global
+         test()=>{
+                test.slow(); //Makes 90 seconds 
+        }
+
+B)Action Timeout
+1) config file
+    export default defineConfig{
+        use{
+            actionTimeout: 30000
+        }
+    }
+
+2) Testcase level
+    locatoe.click({timeout:5000}
+
+C) Assertion timeout
+1) Global level : In config file 
+        export default defineConfig{
+                 expect: {timeout:60000}
+        }
+
+2) Testcase : In testcase =>overrides global
+        await expect(locator).toBeVisible({timeout: 10000})
+
+
+==================Assertions=======================
+1) Auto retrying assertions: on locators - autowait mechanism - wait is required
+    await expect(locator).toBeVisible();
+
+2)Non-retrying assertions: on values - no autowait mechanism - no wait is required
+    expect(value).toBe();
+
+3) Soft vs Hard assertions
+await expect(page).toHaveTitle("XYZ");
+await expect.soft(page).toHaveTitle("XYZ");
+
+=================Screesnshots=======================
+1) Visible page Screesnshot
+await page.screesnshot({path: "location of file/'homepage'+timestamp+.png"});
+
+2) Full page screesnshot
+await page.screesnshot({path: "location of file/'homepage'+timestamp+.png", fullPage:true});
+
+3)Specific locator
+const logo=await page.locator("xyxz");
+logo.screesnshot({path: "location of file/'homepage'+timestamp+.png"});
+
+4)In config file
+export default defineConfig{
+    use:{
+    screesnshot: 'only-on-failure' ----or-----'on-first-failure'
+    }
+}
+
+
+=================Video recording=======================
+export default defineConfig{
+    use:{
+    video: 'on-first-retry' or 'retain-on-failure'
+    }
+}
+
+
+=================Flaky tests=======================
+retry=re-run
+
+export default defineConfig{
+    //Locally
+    retries:3;
+
+    //In CI
+    retries : process.env.CI?2:0
+}
+
+=================Grouping of tests=======================
+
+test.describe("Group1", async()=>{
+    test(test1)
+    test(test2)
+
+})
+
+test.describe("Group2", async()=>{
+    test(test3)
+    test(test4)
+
+})
+
+npx playwright test --grep=Group1
+
+=====================Hooks===================================
+manage how and when tests needs to be executed like annotations in selenium
+1. beforeEach : executes before execution of each test
+2. beforeEach : executes after execution of each test
+
+3. beforeAll(): executes only once before all the tests execution
+4. afterAll() : executes only once after all the tests execution
+
+
+test.beforeEach('beforeEach ex: login', async()={
+    console.log("Executes before once each test)
+})
+
+test.afterEach('beforeEach ex: logout', async()={
+    console.log("Executes before once each test")
+})
+
+test.beforeAll('executes only once before all tests', ()=>{
+    console.log("beforeAll");
+})
+
+test.beforeAll('executes only once before all tests', ()=>{
+    console.log("afterAll");
+})
+
+test.afterAll('executes only once', ()=>{
+    
+})
+
+/*
+beforeAll
+beforeEach
+test1
+afterEach
+
+beforeEach
+test2
+afterEach
+afterAll
+*/
+
+=====================Annotations===================================
+test.only -> executes only this testcase
+test.skip ->
+test.fail ->intentionally fail
+test.fixme -> dummy test 
+test. slow -> take more to execute that is  90 seconds
+
+=====================tagging===================================
+import {test, except} from "@playwright/test";
+//Method 1:
+test("@sanity @smoke check title", async()=>{
+
+})
+
+//Method 2:
+test("check title", {tag:['@sanity', '@regression']}, async()=>{
+
+})
+
+npx playwright test --grep "@sanity"
+
+
+=====================parallel execution===================================
+
+-------------------making execution serial---------------
+Config file level:-
+export default defaultConfig{
+
+    fullyParallel:false,
+    workers=1,
+
+}
+
+workers : thread assigned to each testcase execution
+ 
+ -> In serial only one workers
+ -> If we set workers =1 the serial execution
+
+
+Testcase level:-
+test.describe.configure({mode:serial})
+
+-------------------making execution parallel---------------
+Config file level:-Type 1
+export default defaultConfig{
+
+    fullyParallel:true,
+     workers=3,
+
+}
+
+Config file level:-Type 2
+->Only chrome browser in parallel because it is mentioned as true and remaining false as top level false
+export default defaultConfig{
+    fullyParallel:false,
+      workers=4,
+        projects:[
+            name:'chromium',
+            use:{...devices['Desktop Chrome']}
+            fullyParallel=true;
+    ]
+}
+
+
+
+workers : thread assigned to each testcase execution
+ 
+ -> In serial only one workers
+ -> If we set workers =1 the serial execution
+
+
+Testcase level:-
+test.describe.configure({mode:parallel})
+
+->Depending on numbers of tests workers will be allocated or we can set in config file
+
+npx playwright test --workers 4
+
+
+=====================Data driven testing===================================
+//------------Single dimensional array--------------------
+const searchItems: string[] = ['laptop', 'desktop', 'monitor'];
+
+
+for (const item of searchItems)
+    test(`search for each ${item}`, async ({ page }) => {
+
+        await page.goto('https://example.com');
+        await page.fill('input[name="q"]', item);
+        await page.click('button[type="submit"]');
+        await expect(page).toHaveURL(/search/);
+    });
+
+
+//---------------2 dimensional array-----------------
+const loginTestData: string[][] =
+    [
+        ['ksg@example.com', 'test123', 'valid'],
+        ['ksgg@example.com', 'test1234', 'valid'],
+        ['', '', 'invalid']
+    ];
+
+
+
+test.describe("Login tests", async () => {
+    for (const [email, password, validity] of loginTestData) {
+        test(`Login validation for ${validity}`, async ({ page }) => {
+            await page.locator('#email').fill(email);
+            await page.locator('#password').fill(password);
+
+        });
+    }
+});
+
+//---------------JSON file : needs to be created separately-----------------
+
+[
+
+    {
+        email: 'ksg@example.com',
+        password: 'test123',
+        validity: 'valid'
+    },
+    {
+        email: 'ksgg@example.com',
+        password: 'test1234',
+        validity: 'valid'
+    },
+    {
+        email: '',
+        password: '',
+        validity: 'invalid'
+    }
+
+
+]
+
+import fs from 'fs';
+
+const jsonPath = './src/tests/testdata.json';
+const loginData: any = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
+
+for (const { email, password, validity } of loginData) {
+    test(`Login validation for ${validity}`, async ({ page }) => {
+        await page.locator('#email').fill(email);
+        await page.locator('#password').fill(password);
+
+    });
+
+}
